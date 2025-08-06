@@ -1,1 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Approve Testimonials</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
 
+<h2>Admin Login</h2>
+<div id="loginSection">
+  <input type="password" id="adminPassword" class="form-control mb-2" placeholder="Enter admin password">
+  <button id="loginBtn" class="btn btn-primary">Login</button>
+</div>
+
+<div id="adminPanel" style="display:none;">
+  <h3>Pending Testimonials</h3>
+  <div id="pendingList"></div>
+
+  <h3 class="mt-4">Approved Testimonials</h3>
+  <div id="approvedList"></div>
+</div>
+
+<script>
+const ADMIN_PASS = "admin123"; // Change this password later
+
+document.getElementById("loginBtn").addEventListener("click", function(){
+  let pass = document.getElementById("adminPassword").value;
+  if(pass === ADMIN_PASS){
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    loadTestimonials();
+  } else {
+    alert("Wrong password!");
+  }
+});
+
+function loadTestimonials(){
+  let pending = JSON.parse(localStorage.getItem("pendingTestimonials")) || [];
+  let approved = JSON.parse(localStorage.getItem("approvedTestimonials")) || [];
+
+  // Pending list
+  let pendingHTML = "";
+  pending.forEach((t, i) => {
+    pendingHTML += `
+      <div class="border p-2 mb-2">
+        <p>"${t.text}"</p>
+        <small>- ${t.name}</small><br>
+        <button class="btn btn-success btn-sm" onclick="approveTestimonial(${i})">Approve</button>
+        <button class="btn btn-danger btn-sm" onclick="deletePending(${i})">Delete</button>
+      </div>
+    `;
+  });
+  document.getElementById("pendingList").innerHTML = pendingHTML || "<p>No pending testimonials.</p>";
+
+  // Approved list
+  let approvedHTML = "";
+  approved.forEach(t => {
+    approvedHTML += `
+      <div class="border p-2 mb-2">
+        <p>"${t.text}"</p>
+        <small>- ${t.name}</small>
+      </div>
+    `;
+  });
+  document.getElementById("approvedList").innerHTML = approvedHTML || "<p>No approved testimonials yet.</p>";
+}
+
+function approveTestimonial(index){
+  let pending = JSON.parse(localStorage.getItem("pendingTestimonials")) || [];
+  let approved = JSON.parse(localStorage.getItem("approvedTestimonials")) || [];
+
+  approved.push(pending[index]); // Move to approved
+  pending.splice(index, 1); // Remove from pending
+
+  localStorage.setItem("pendingTestimonials", JSON.stringify(pending));
+  localStorage.setItem("approvedTestimonials", JSON.stringify(approved));
+
+  loadTestimonials();
+}
+
+function deletePending(index){
+  let pending = JSON.parse(localStorage.getItem("pendingTestimonials")) || [];
+  pending.splice(index, 1);
+  localStorage.setItem("pendingTestimonials", JSON.stringify(pending));
+  loadTestimonials();
+}
+</script>
+</body>
+</html>
