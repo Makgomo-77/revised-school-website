@@ -54,19 +54,29 @@
 <section id="testimonials" class="p-5">
   <div class="container">
     <h2 class="mb-4">Parent Testimonials</h2>
+<div class="row" id="testimonialList"></div>
 
-    <!-- Display Testimonials -->
-    <div id="testimonialList">
-      <div class="testimonial-card">
-        <p>"Springfield High has transformed my child's learning experience. The teachers truly care!"</p>
-        <small>- Jane Doe, Parent</small>
+<script>
+function loadApprovedTestimonials(){
+  let approved = JSON.parse(localStorage.getItem("approvedTestimonials")) || [];
+  let html = "";
+  approved.forEach(t => {
+    html += `
+      <div class="col-md-4 mb-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <p class="card-text">"${t.text}"</p>
+            <h6 class="card-subtitle text-muted">- ${t.name}</h6>
+          </div>
+        </div>
       </div>
-      <div class="testimonial-card">
-        <p>"The facilities and resources are top-notch. My daughter loves going to school here."</p>
-        <small>- John Smith, Parent</small>
-      </div>
-    </div>
+    `;
+  });
+  document.getElementById("testimonialList").innerHTML = html || "<p>No testimonials yet.</p>";
+}
 
+document.addEventListener("DOMContentLoaded", loadApprovedTestimonials);
+</script>
     <!-- Submission Form -->
     <h4 class="mt-5">Submit Your Testimonial</h4>
     <form id="testimonialForm">
